@@ -1,0 +1,29 @@
+<div class="container">
+
+	<h3>Members </h3>
+	<h4>Add new member(s) to list</h4>
+	<form type="POST" action="/list/1/add">	
+		<textarea rows="4" cols="50" name="users">username1:email1, username2:email2, username3:email3 ....</textarea>
+		<input type="hidden" value="1" name="listID">
+		<input type="submit" value="Add">
+	</form>
+	<table class="table">
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Email</th>
+			<th></th>
+		</tr>
+
+		<% _.each(members, function(member) { %>
+			<tr>
+			<% _.each(member.members, function(mem) { %>
+				<td><%= mem.id %></td>
+				<td><a href="/user/show/<%= mem.id %>" title="show user <%= mem.id %>"><%= mem.name %></a></td>
+				<td><%= mem.email %></td>
+				<td>&nbsp;</td>
+			</tr>
+			<% }) %>
+		<% }) %>
+
+	</table>
