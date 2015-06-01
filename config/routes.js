@@ -49,8 +49,9 @@ module.exports.routes = {
     view: 'signup'
   },
 
-  '/list/:id/members': 'ListController.members',
-  '/list/:id/add?': 'ListController.addMembers',
+
+  'get /list/:id/members': 'ListController.members',
+  'post /list/:id/add': 'ListController.addMembers',
   '/associate': 'UserController.associate',
   '/userLists': 'UserController.lists',
 

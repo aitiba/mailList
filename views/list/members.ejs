@@ -2,9 +2,11 @@
 
 	<h3>Members </h3>
 	<h4>Add new member(s) to list</h4>
-	<form type="POST" action="/list/1/add">	
-		<textarea rows="4" cols="50" name="users">username1:email1, username2:email2, username3:email3 ....</textarea>
-		<input type="hidden" value="1" name="listID">
+	<form method="POST" action="/list/1/add">	
+		<!-- <textarea rows="4" cols="50" name="users"></textarea> -->
+		<input type="text" name="users[]">
+		<input type="text" name="users[]">
+		<input type="text" name="users[]">
 		<input type="submit" value="Add">
 	</form>
 	<table class="table">

@@ -8,7 +8,7 @@
 var List = {
 
   // Identity is a unique name for this model and must be in lower case
-  identity: 'list',
+  // identity: 'list',
     
   // A named connection which will be used to read/write to the datastore
   connection: 'someMysqlServer',

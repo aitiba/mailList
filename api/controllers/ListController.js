@@ -35,96 +35,62 @@ module.exports = {
   },
 
   addMembers: function (req, res, next) {
-    sails.models.list.findOne(req.param('id')).exec(function(err, list) {
-     
-      if(err) console.log("error");
+      var id = req.param('id');
+      var emails = req.param('users');
       
-      var users = req.param('users');
-      users = users.split(",");
-      // console.log(users);
-      _.each(users, function(member) {
-        member = member.split(":");
-        // quitar espacios en blanco de principio y fin de member[0] y member[1]
-        // console.log(member[0]);
-
-          // var res =sails.models.user.findOne({'email': 'nikola@tesla.eus'}).populate('lists', {
-          //   where: { id: 1 }
-          // }).exec(function(err, exist) {
-          //   console.log(exist);
-          // });
-          
-
-
-        var membersYet = [];
-        user.findOne({'email': member[1].trim()}, function foundUser (err, user) {
-          // si hay una cuenta con ese email.
-          var listid = req.param('listID');
-          if(typeof user != 'undefined') {
-
-            // Meter en listMember();
-            
-             var listUser = new Promise(function (resolve, reject) {            
-                sails.models.user.query("select COUNT(*) as member from list_members__user_lists where list_members = " + listid + " and user_lists = "+ user.id, function (err,data) {
-
-                if (err) return console.log(err);
-                else {
-                  console.log(data[0].member);
-                  // 'ya es miembro'
-                  if (data[0].member == 1) {
-                    console.log("YET");
-                    // membersYet.push('hia@hi.com');
-                    membersYet = Promise.resolve(membersYet.push('hia@hi.com'));
-                  } else {
-                    sails.models.list.findOne(listid).exec(function(err, list) {
-                      list.members.add(user.id);
-                      list.save(function(err) {});
-                    });
-                  }
-                }
-                console.log("AAAAAAAAAAAAAAA");
-                console.log(membersYet);
-              });
-              // End listMember();
-                  })
-                 
-                  listUser.then(function(response){
-                          cb(response)
-                  })
-        
-           
-          // si no hay una cuenta con ese email. 
-          } else {
-              // console.log("crear usuario");
-
-              var password = Math.random().toString(36).slice(-8);
-
-              var params = {name: member[0].trim(), email: member[1].trim(), password: password};
-              sails.models.user.create(params, function(err, user) {
-
-                  if (err) return next(err);
-
-                  // TODO: mandarle email con url + user + pass.
-
-                  sails.models.list.findOne(listid).exec(function(err, list) {
-                    list.members.add(user.id);
-                    list.save(function(err) {});
-                  });
-                  
-              });
-
-
-          }
-        console.log(membersYet);
+      var listPromise =  new Promise(function (resolve, reject) {            
+        List.findOne(id)
+        .populate('members')
+        .exec(function(err, list) {
+          // res.json(list);
+          resolve(list)
         });
-        
-        
-        // res.redirect("/list/" + listid + "/members");
-
       });
+        
+      listPromise.then(function(list){
+        console.log(1);
+        res.ok();
+        var memberEmails = [];
 
-     });
-  
-  }
+        _.each(list.members, function(member) {
+          memberEmails.push(member.email);
+        });
 
+        var newMembers = _.difference(emails, memberEmails);
+// console.log(newMembers);
+        if (newMembers.length > 0) {
+         
+          _.each(newMembers, function(email) {
+            User
+              .findOne({
+                  where: {
+                    email: email
+                  }
+              })
+              .exec(function(err, existingUser) {
+                console.log(existingUser)
+                var userPromise =  new Promise(function (resolve, reject) { 
+                  if(existingUser) {
+                    resolve(existingUser);
+                  } else {
+                    console.log("creating user...")
+                    User.create({email:email}).exec(function(err, newuser) {
+                       console.log(err);
+                     console.log("newuser");
+                      console.log(newuser);
+                      resolve(newuser);
+                    })
+                  }
+                });
+
+                userPromise.then(function(user) {
+                    list.members.add(user.id);
+                    list.save(function(err) {}); 
+                });
+              });
+          })
+        }
+      });
+    }
 };
 

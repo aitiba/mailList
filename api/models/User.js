@@ -9,7 +9,7 @@ var bcrypt = require('bcrypt');
 
 var User = {
 
-  identity: 'user',
+  // identity: 'user',
   connection: 'someMysqlServer',
 
   attributes: {
@@ -22,7 +22,7 @@ var User = {
     password: {
       type: 'string',
       minLength: 6,
-      required: true
+      // required: true
     },
   
     // one-to-one association
@@ -47,19 +47,6 @@ var User = {
       delete obj.password;
       return obj;
     }
-  },
-  beforeCreate: function(user, cb) {
-    bcrypt.genSalt(10, function(err, salt) {
-      bcrypt.hash(user.password, salt, function(err, hash) {
-        if (err) {
-          console.log(err);
-          cb(err);
-        } else {
-          user.password = hash;
-          cb();
-        }
-      });
-    });
   }
 };
 
