@@ -27,7 +27,9 @@
     "passport-local": "^1.0.0",
     "passport": "^0.2.2",
     "bcrypt": "^0.8.3",
-    "bluebird": "^2.9.27"
+    "bluebird": "^2.9.27",
+    "mail-listener2": "^0.1.8",
+    "emailjs": "^0.3.16"
   },
   "scripts": {
     "start": "node app.js",

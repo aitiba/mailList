@@ -9,7 +9,7 @@ var Promise = require('bluebird');
 
 module.exports = {
   index: function (req, res, next) {
-    list.find(function foundLists (err, lists) {
+    List.find(function foundLists (err, lists) {
       if (err) return  next(err);
       
       res.view({
@@ -21,7 +21,7 @@ module.exports = {
   members: function (req, res, next) {
     var members = '';
 
-    sails.models.list.find(req.param('id')).populate('members').exec(
+    List.find(req.param('id')).populate('members').exec(
       function(err, list) { 
         if (err) { 
           res.negotiate(err); 
