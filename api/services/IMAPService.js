@@ -100,11 +100,10 @@ var IMAPService = {
             console.log(1);
             console.log(list);
 
-            var memberEmails = [];
-
-            _.each(list.members, function(member) {
-              memberEmails.push(member.email);
+            var memberEmails = _.map(list.members, function(member){
+              return member.email
             });
+            
             console.log(2);
             console.log(memberEmails);
           // for (var i = 0; i < fromLength; i++) { 
