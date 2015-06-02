@@ -1,6 +1,7 @@
 'use strict';
 var MailListener = require("mail-listener2");
 var email = require("../../node_modules/emailjs/email");
+var Promise = require('bluebird');
 
 var IMAPService = {
     start: function startMailListener() {
@@ -71,21 +72,48 @@ var IMAPService = {
           // console.log(mail);
           
           var from = mail.from;
+          var listEmail = mail.to;
           var text = mail.text;
           var subject = mail.subject;
 
           var fromLength = from.length;
 
-          console.log(from);
+          console.log(from[0].address);
           // console.log(in_array('van', ['Kevin', 'van', 'Zonneveld']));
           // console.log(in_array(from, ['email@domain.com', 'a@a.com', 'b@a.com', 'c@a.com']));
           
-          for (var i = 0; i < fromLength; i++) { 
+          var listPromise =  new Promise(function (resolve, reject) {            
+            List
+                .findOne({
+                    where: {
+                        email: listEmail[0].address
+                    }
+            })
+            .populate('members')
+            .exec(function(err, list) {
+              // res.json(list);
+              resolve(list)
+            });
+          });
+            
+          listPromise.then(function(list){
+            console.log(1);
+            console.log(list);
+
+            var memberEmails = [];
+
+            _.each(list.members, function(member) {
+              memberEmails.push(member.email);
+            });
+            console.log(2);
+            console.log(memberEmails);
+          // for (var i = 0; i < fromLength; i++) { 
             // if (from in listUsers) {
-            if (in_array(from[i].address, ['email@domain.com', 'a@a.com', 'b@a.com', 'c@a.com'])) {
+            if (in_array(from[0].address, memberEmails)) {
               // send email.
               console.log("SEND EMAIL");
-            
+              var config = sails.config.mailListener;
+
               var server  = email.server.connect({
                  user:    config.username, 
                  password:config.password, 
@@ -95,22 +123,21 @@ var IMAPService = {
               console.log("SERVER OK");
 
               var message = {
-                 text:    "i hope this works", 
-                 from:    "you <email@domain.com>", 
-                 to:      "someone <email@domain.com>, another <email@domain.net>",
-                 cc:      "else <email@domain.com>",
-                 subject: "testing emailjs"
+                 subject: subject,
+                 to:      "kaixo@aitoribanez.com",
+                 from:    from[0].address, 
+                 bcc:      memberEmails.toString(),
+                 text:    text
               }
               
               // send the message and get a callback with an error or details of the message that was sent
               server.send(message, function(err, message) { console.log(err || message); });      
-
-
               
             } else {
               console.log("SEND TO MODERATE")
             }
-          }
+          // }
+        });
 
         });
 
