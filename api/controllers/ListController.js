@@ -50,10 +50,9 @@ module.exports = {
       listPromise.then(function(list){
         console.log(1);
         res.ok();
-        var memberEmails = [];
-
-        _.each(list.members, function(member) {
-          memberEmails.push(member.email);
+        
+        var memberEmails = _.map(list.members, function(member){
+          return member.email
         });
 
         var newMembers = _.difference(emails, memberEmails);
