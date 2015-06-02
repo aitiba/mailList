@@ -78,7 +78,7 @@ var IMAPService = {
 
           var fromLength = from.length;
 
-          console.log(from[0].address);
+          // console.log(from[0].address);
           // console.log(in_array('van', ['Kevin', 'van', 'Zonneveld']));
           // console.log(in_array(from, ['email@domain.com', 'a@a.com', 'b@a.com', 'c@a.com']));
           
@@ -97,21 +97,22 @@ var IMAPService = {
           });
             
           listPromise.then(function(list){
-            console.log(1);
-            console.log(list);
+            // console.log(1);
+            // console.log(list);
 
-            var memberEmails = _.map(list.members, function(member){
-              return member.email
+            var memberEmails = [];
+
+            _.each(list.members, function(member) {
+              memberEmails.push(member.email);
             });
-            
-            console.log(2);
-            console.log(memberEmails);
+            // console.log(2);
+            // console.log(memberEmails);
           // for (var i = 0; i < fromLength; i++) { 
             // if (from in listUsers) {
             if (in_array(from[0].address, memberEmails)) {
               // send email.
               console.log("SEND EMAIL");
-              var config = sails.config.mailListener;
+             var config = sails.config.mailListener;
 
               var server  = email.server.connect({
                  user:    config.username, 
@@ -123,15 +124,16 @@ var IMAPService = {
 
               var message = {
                  subject: subject,
-                 to:      "kaixo@aitoribanez.com",
                  from:    from[0].address, 
                  bcc:      memberEmails.toString(),
-                 text:    text
+                 text:    text,
+                 "Reply-To": "kaixo@aitoribanez.com",
+                 "List-Post": "<mailto:kaixo@aitoribanez.com>"
               }
               
               // send the message and get a callback with an error or details of the message that was sent
-              server.send(message, function(err, message) { console.log(err || message); });      
-              
+              server.send(message, function(err, message) { console.log(err || message); });
+            
             } else {
               console.log("SEND TO MODERATE")
             }
