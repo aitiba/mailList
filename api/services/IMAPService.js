@@ -124,10 +124,11 @@ var IMAPService = {
 
               var message = {
                  subject: subject,
-                 // to:      "kaixo@aitoribanez.com",
                  from:    from[0].address, 
                  bcc:      memberEmails.toString(),
-                 text:    text
+                 text:    text,
+                 "Reply-To": "kaixo@aitoribanez.com",
+                 "List-Post": "<mailto:kaixo@aitoribanez.com>"
               }
               
               // send the message and get a callback with an error or details of the message that was sent
